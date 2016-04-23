@@ -5,11 +5,12 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <netinet/in.h>
 
 #define SERVER  "/tmp/serversocket"
 #define MAXMSG  512
 
-int make_named_socket(const char *filename);
+int make_named_socket(const char *filename); 
 
 int
 main (void)
@@ -18,7 +19,7 @@ main (void)
   char message[MAXMSG];
   struct sockaddr_un name;
   size_t size;
-  int nbytes;
+  int nbytes; 
 
   /* Remove the filename first, it’s ok if the call fails */
   unlink (SERVER);
@@ -54,12 +55,12 @@ main (void)
 int
 make_named_socket (const char *filename)
 {
-  struct sockaddr_un name;
+  struct sockaddr_in name;
   int sock;
   size_t size;
 
   /* Create the socket. */
-  sock = socket (PF_LOCAL, SOCK_DGRAM, 0);
+  sock = socket (PF_INET, SOCK_DGRAM, 0);
   if (sock < 0)
     {
       perror ("socket");
@@ -67,20 +68,16 @@ make_named_socket (const char *filename)
     }
 
   /* Bind a name to the socket. */
-  name.sun_family = AF_LOCAL;
-  strncpy (name.sun_path, filename, sizeof (name.sun_path));
-  name.sun_path[sizeof (name.sun_path) - 1] = '\0';
+   /* Address family = Internet */
+  name.sin_family = AF_INET;
+  /* Set port number, using htons function to use proper byte order */
+  name.sin_port = htons(7891);
+  /* Set IP address to localhost */
+  name.sin_addr.s_addr = htonl(INADDR_ANY);
+  /* Set all bits of the padding field to 0 */
+  memset(name.sin_zero, '\0', sizeof name.sin_zero);
 
-  /* The size of the address is
-     the offset of the start of the filename,
-     plus its length (not including the terminating null byte).
-     Alternatively you can just do:
-     size = SUN_LEN (&name);
- */
-  size = (offsetof (struct sockaddr_un, sun_path)
-          + strlen (name.sun_path));
-
-  if (bind (sock, (struct sockaddr *) &name, size) < 0)
+  if (bind (sock, (struct sockaddr *) &name, sizeof(name)) < 0)
     {
       perror ("bind");
       exit (EXIT_FAILURE);
