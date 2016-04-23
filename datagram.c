@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <unistd.h>
 #include <netinet/in.h>
 
 #define SERVER  "/tmp/serversocket"
@@ -12,16 +13,15 @@
 
 int make_named_socket(const char *filename); 
 
-int
-main (void)
+int main (void)
 {
   int sock;
   char message[MAXMSG];
-  struct sockaddr_un name;
-  size_t size;
+  struct sockaddr_in name;
+  socklen_t size;
   int nbytes; 
 
-  /* Remove the filename first, it’s ok if the call fails */
+  /* Remove the filename first, it's ok if the call fails */
   unlink (SERVER);
 
   /* Make the socket, then loop endlessly. */
@@ -30,8 +30,7 @@ main (void)
     {
       /* Wait for a datagram. */
       size = sizeof (name);
-      nbytes = recvfrom (sock, message, MAXMSG, 0,
-                         (struct sockaddr *) & name, &size);
+      nbytes = recvfrom (sock, message, MAXMSG, 0, (struct sockaddr *) &name, &size);
       if (nbytes < 0)
         {
           perror ("recfrom (server)");
@@ -42,8 +41,7 @@ main (void)
       fprintf (stderr, "Server: got message: %s\n", message);
 
       /* Bounce the message back to the sender. */
-      nbytes = sendto (sock, message, nbytes, 0,
-                       (struct sockaddr *) & name, size);
+      nbytes = sendto (sock, message, nbytes, 0, (struct sockaddr *) & name, size);
       if (nbytes < 0)
         {
           perror ("sendto (server)");
@@ -52,15 +50,14 @@ main (void)
     }
 }
 
-int
-make_named_socket (const char *filename)
+int make_named_socket (const char *filename)
 {
   struct sockaddr_in name;
   int sock;
   size_t size;
 
   /* Create the socket. */
-  sock = socket (PF_INET, SOCK_DGRAM, 0);
+  sock = socket (AF_INET, SOCK_DGRAM, 0);
   if (sock < 0)
     {
       perror ("socket");
