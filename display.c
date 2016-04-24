@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
   }
  }
 
-struct point stars[50];
+struct point stars[120];
 int i;
 for(i=0;i<50;i++){
 	stars[i].x=random_number(maxx/6 + 1, 5*maxx/6 - 1);
@@ -132,19 +132,23 @@ init_pair(102, 10, 9);
  int re = 0;
  float rem = 0;
  int length = 1;
- int stage = 3;
+ int stage = 0; //this variable keeps track of which part of the sequence we are in
  int progress = 0;
  int progress2 = 0;
+ int progress3 = 0;
  int line;
  int col;
  bool starState = false;
 int offsetx;
 int offsety;
 
+int sleeper =6000;
+
  while(run){
    if(len < 1000 ) len+=2;
    else if(stage==0){
 	stage=1;
+	sleeper=8000;
    }
    pair = random_number(1,TOTALCOLORS);
    attron(COLOR_PAIR(pair));
@@ -171,7 +175,10 @@ int offsety;
 
 		  if(progress>=maxx){
 			  progress=maxx;
-			  stage=2;
+			  if(stage==1){
+				  stage=2;
+				  sleeper=10000;
+			  }
 		  }else{
 			progress+= ((progress * 8) / maxx ) + 1;
 			progress+=3;
@@ -187,16 +194,17 @@ int offsety;
 	      }
 		}
 			
-		init_color(8, progress2*3000/maxx , progress2*3000/maxx, progress2*3000/maxx);
+		init_color(8, progress2*2500/maxx , progress2*2500/maxx, progress2*2500/maxx);
 		init_pair(100, 8, COLOR_BLACK);
 		attron(COLOR_PAIR(100));
 
-		for(i = 0 ; i<50 ; i++){			
+		for(i = 0 ; i<120 ; i++){			
 			if( abs(stars[i].x - maxx/2) >= progress2 ) continue;
-			if(starState != (i%2==0)){
+			//if(starState != (i%2==0)){
+			if(random_number(0,100)>75){
 			     mvaddch(stars[i].y, stars[i].x, (char)32);	
 			}else{
-			     mvaddch(stars[i].y, stars[i].x, (char)43);	
+			     mvaddch(stars[i].y, stars[i].x, (char)46);	
 			}
 			
 		}
@@ -205,7 +213,10 @@ int offsety;
 
 		  if(progress2>=maxx/3){
 			  progress2=maxx/3;
-			  stage=3;
+			  if(stage==2){
+				stage=3;
+				sleeper=12000;
+			  }
 		  }else{
 			//progress+= (progress * 8) / maxx;
 			progress2+=1;
@@ -228,6 +239,14 @@ int offsety;
 			mvaddch(title[i]+offsety+1, title[i+1]+offsetx-1,(char)32);	
 		}
 		attroff(COLOR_PAIR(102));
+		
+
+	
+		if(progress3<25){
+			progress3 += 1; 
+		}else{
+			mvaddstr(offsety+titleHeight+2, (maxx/2) - 6, "[Press Enter]");
+		}
 	  }
 	   refresh();
 	   re=(int)rem;
@@ -237,7 +256,7 @@ int offsety;
    }
    free(text);
 
-   usleep(10000); 
+   usleep(sleeper); 
 
 
  }
