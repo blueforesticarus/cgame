@@ -251,7 +251,7 @@ for(col=0; col<=maxx*(maxy/16 + 1); col+=1){
 		attron(COLOR_PAIR(100));
 
 		for(i = 0 ; i<120 ; i++){			
-			if( abs(stars[i].x - maxx/2) >= progress2 ) continue;
+			if( abs(stars[i].x-1 - maxx/2) >= progress2 ) continue;
 			//if(starState != (i%2==0)){
 			if(random_number(0,100)>75){
 			     mvaddch(stars[i].y, stars[i].x, (char)32);	
