@@ -157,7 +157,7 @@ init_pair(102, 10, 9);
  int re = 0;
  float rem = 0;
  int length = 1;
- int stage = 3;//0; //this variable keeps track of which part of the sequence we are in
+ int stage = 0;//0; //this variable keeps track of which part of the sequence we are in
  int progress = 0;
  int progress2 = 0;
  int progress3 = 0;
@@ -168,6 +168,33 @@ int offsetx;
 int offsety;
 
 int sleeper =6000;
+
+if(argc==2){
+int counter = 0;
+int color = 0;
+for(col=0; col<=maxx*(maxy/16 + 1); col+=1){
+	for(line=0; line<16; line+=1){
+	    init_color(1+counter, color/256 *1000 /16, (color/16)%16 *1000 /16, color%16 *1000 /16);
+		//init_color(200+counter,500,500,500);
+		init_pair(1+counter, 1+counter,1+counter); 
+		mvaddch(line + 16*(col/maxx),col%maxx,(char)32 | COLOR_PAIR(1+counter));
+		//attroff(COLOR_PAIR(200+counter)); 
+		counter++;
+		color++;
+		if(counter>255){
+			counter=0;
+		}
+		if(color>=16*16*16){
+			color=0;
+		}
+	}
+	refresh();
+	usleep(10000);
+ }
+ getch();
+ endwin();
+ exit(0);
+}
 
  while(run){
    if(len < 1000 ) len+=2;
@@ -287,7 +314,6 @@ int sleeper =6000;
 
  }
 
-sleep(6);
 
  endwin(); // Restore normal terminal behavior
 }
