@@ -7,16 +7,46 @@
 #include <time.h>
 
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
+#define STARCOUNT 100
+
+void genstars(int num);
+int random_number(int min_num, int max_num);
+void handle_winch(int sig);
+char *getstring(int length);
 
 static volatile int run = 1;
+int maxx, maxy;
 
 struct point{
 	int x;
 	int y;
 };
 
+struct point stars[STARCOUNT];
+
+void genstars(int num){
+	int i;
+	for(i=0;i<num;i++){
+		stars[i].x=random_number(maxx/6 + 2, 5*maxx/6 - 1);
+		stars[i].y=random_number(0,maxy);
+	}
+}
+
+
 void killer(int dummy){
  run=0;
+}
+
+void handle_winch(int sig)
+{
+    endwin();
+    // Needs to be called after an endwin() so ncurses will initialize
+    // itself with the new terminal dimensions.
+    refresh();
+    clear();
+
+	getmaxyx(stdscr, maxy, maxx);
+	genstars(STARCOUNT);
 }
 
 int random_number(int min_num, int max_num)
@@ -86,9 +116,10 @@ int main(int argc, char *argv[]) {
  noecho();
  curs_set(FALSE);
 
+ signal(SIGWINCH, handle_winch);
+
  start_color();			/* Start color 			*/
 
- int maxx, maxy;
  getmaxyx(stdscr, maxy, maxx);
 
  int n,m;
@@ -102,13 +133,7 @@ int main(int argc, char *argv[]) {
   }
  }
 
-struct point stars[120];
-int i;
-for(i=0;i<50;i++){
-	stars[i].x=random_number(maxx/6 + 1, 5*maxx/6 - 1);
-	stars[i].y=random_number(0,maxy);
-}
-
+genstars(STARCOUNT);
 
 int titleWidth = 44;
 int titleHeight = 9;
@@ -125,14 +150,14 @@ init_color(9, 289, 500, 250);
 init_color(10, 200, 300, 200);
 init_pair(101, 9, 10);
 init_pair(102, 10, 9);
-
+ int i = 0; 
  int len = 0;
  int pair;
  int max = 1;
  int re = 0;
  float rem = 0;
  int length = 1;
- int stage = 0; //this variable keeps track of which part of the sequence we are in
+ int stage = 3;//0; //this variable keeps track of which part of the sequence we are in
  int progress = 0;
  int progress2 = 0;
  int progress3 = 0;
@@ -173,7 +198,7 @@ int sleeper =6000;
 			 }
 	      }
 
-		  if(progress>=maxx){
+		  if(progress>=maxx || stage>1){
 			  progress=maxx;
 			  if(stage==1){
 				  stage=2;
@@ -211,7 +236,7 @@ int sleeper =6000;
 		starState = !starState;
 		attroff(COLOR_PAIR(100));
 
-		  if(progress2>=maxx/3){
+		  if(progress2>=maxx/3 || stage>2){
 			  progress2=maxx/3;
 			  if(stage==2){
 				stage=3;
@@ -245,7 +270,9 @@ int sleeper =6000;
 		if(progress3<25){
 			progress3 += 1; 
 		}else{
+			//attron(A_BLINK); for some reason blinking doesn't work in rxvt
 			mvaddstr(offsety+titleHeight+2, (maxx/2) - 6, "[Press Enter]");
+			//attroff(A_BLINK);
 		}
 	  }
 	   refresh();
@@ -258,8 +285,10 @@ int sleeper =6000;
 
    usleep(sleeper); 
 
-
  }
+
+sleep(6);
+
  endwin(); // Restore normal terminal behavior
 }
 
