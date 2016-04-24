@@ -6,6 +6,8 @@
 #include <string.h>
 #include <time.h>
 
+#define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
+
 static volatile int run = 1;
 
 struct point{
@@ -108,15 +110,21 @@ for(i=0;i<50;i++){
 }
 
 
-int titleWidth = 40;
+int titleWidth = 44;
 int titleHeight = 9;
 int title[] = {
 	1,1, 1,2, 1,3, 1,4, 1,5, 1,6, 2,1, 3,1, 4,1, 4,2, 4,3, 4,4, 4,5, 4,6, 5,6, 6,6, 7,1, 7,2, 7,3, 7,4, 7,5, 7,6,
-	1,9 1,14 2,9 2,14 3,9 3,14, 4,9 4,10 4,11 4,12 4,13, 4,14, 5,9, 5,14, 6,9, 6,14, 7,9, 7,14,
-    1,17, 1,18, 1,19, 1,20, 1,21, 1,22, 2,17, 2,22, 3,17 ,3,22, 4,17, 4,18, 4,19, 4,20, 4,21, 4,22, 5,17, 5,22, 6,17, 6,22, 7,17, 7,22,
-	1,25, 1,26, 1,27, 1,28, 1,29, 2,25, 2,29, 2,30, 3,25, 3,30, 4,25, 4,30, 5,25, 5,30, 6,25, 6,29, 6,30, 7,25, 7,26, 7,27, 7,28, 7,29,
-	1,33, 1,34, 1,35, 1,36, 1,37, 1,38, 2,33, 3,33, 4,33, 4,34, 4,35, 4,36, 4,37, 4,38, 5,33, 6,33, 7,33, 7,34, 7,35, 7,36, 7,37, 7,38	
+	1,10, 1,15, 2,10, 2,15, 3,10, 3,15, 4,10, 4,11, 4,12, 4,13, 4,14, 4,15, 5,10, 5,15, 6,10, 6,15, 7,10, 7,15,
+    1,19, 1,20, 1,21, 1,22, 1,23, 1,24, 2,19, 2,24, 3,19 ,3,24, 4,19, 4,20, 4,21, 4,22, 4,23, 4,24, 5,19, 5,24, 6,19, 6,24, 7,19, 7,24,
+	1,28, 1,29, 1,30, 1,31, 1,32, 2,28, 2,32, 2,33, 3,28, 3,33, 4,28, 4,33, 5,28, 5,33, 6,28, 6,32, 6,33, 7,28, 7,29, 7,30, 7,31, 7,32,
+	1,37, 1,38, 1,39, 1,40, 1,41, 1,42, 2,37, 3,37, 4,37, 4,38, 4,39, 4,40, 4,41, 4,42, 5,37, 6,37, 7,37, 7,38, 7,39, 7,40, 7,41, 7,42	
 };
+
+int titleLength = sizeof(title)/sizeof(title[0]);
+init_color(9, 289, 500, 250);
+init_color(10, 200, 300, 200);
+init_pair(101, 9, 10);
+init_pair(102, 10, 9);
 
  int len = 0;
  int pair;
@@ -124,13 +132,14 @@ int title[] = {
  int re = 0;
  float rem = 0;
  int length = 1;
- int stage = 0;
+ int stage = 3;
  int progress = 0;
  int progress2 = 0;
  int line;
  int col;
  bool starState = false;
-
+int offsetx;
+int offsety;
 
  while(run){
    if(len < 1000 ) len+=2;
@@ -204,8 +213,21 @@ int title[] = {
 	  }
 
 	  if(stage>=3){
-		attron(COLOR_PAIR(100));
-		
+
+		offsetx= (maxx-titleWidth)/2;
+		offsety= (maxy-titleHeight)/2;
+
+		attron(COLOR_PAIR(101));
+		for(i=0;i<titleLength;i+=2){
+			mvaddch(title[i]+offsety, title[i+1]+offsetx,(char)32);	
+		}
+		attroff(COLOR_PAIR(101));
+
+		attron(COLOR_PAIR(102));
+		for(i=0;i<titleLength;i+=2){
+			mvaddch(title[i]+offsety+1, title[i+1]+offsetx-1,(char)32);	
+		}
+		attroff(COLOR_PAIR(102));
 	  }
 	   refresh();
 	   re=(int)rem;
@@ -214,9 +236,6 @@ int title[] = {
        re--;
    }
    free(text);
-   
-
-	 
 
    usleep(10000); 
 
