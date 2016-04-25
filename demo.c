@@ -155,12 +155,7 @@ int main(int argc, char *argv[]) {
 				 }
 		      }
 	
-	typedef int PaStreamCallback( const void *input,
-                                      void *output,
-                                      unsigned long frameCount,
-                                      const PaStreamCallbackTimeInfo* timeInfo,
-                                      PaStreamCallbackFlags statusFlags,
-                                      void *userData ) ;		  if(progress>=maxx || stage>1){
+             if(progress>=maxx || stage>1){
 				  progress=maxx;
 				  if(stage==1){
 					  stage=2;

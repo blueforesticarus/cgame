@@ -1,4 +1,4 @@
 # Makefile
-LDFLAGS=-lncurses
+LDFLAGS=-lncurses -lsndfile -lportaudio -lpthread
 
 all: demo
