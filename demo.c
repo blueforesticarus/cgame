@@ -38,7 +38,7 @@ char user_in;
 
 int main(int argc, char *argv[]) {
 	char* current_term = getenv("TERM");
-	char* new_term = malloc(sizeof current_term + 15);
+	char* new_term = malloc(100);
 	int j, needs_update = 1;
 	for (j = 0; j < strlen(current_term); j++)
 	{
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     
     start_color();			/* Start color 			*/
     
-    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "death_and_maiden.ogg");
+    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "glitch.ogg");
     if (ret)
     {
         printf("Failed to start thread: %d\n", ret);
@@ -259,8 +259,7 @@ int main(int argc, char *argv[]) {
             }
           }
           user_in = getch();
-		  if (user_in == 'q' || user_in == 'Q')
-		  	run = 0;
+		  if (user_in == 'q' || user_in == 'Q') run = 0;
            if (user_in == KEY_ENTER && progress3 >= 25)
            {
            	int ret = pthread_create(&st, NULL, (void *) &handle_sound, "enter.ogg");
