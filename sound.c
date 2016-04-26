@@ -114,7 +114,7 @@ callback knows what's up */
   {
     printf("error opening output, error code = %i\n", error);
     Pa_Terminate();
-    return 1;
+    exit(1);
   }
 
   /* when we start the stream, the callback starts getting called */

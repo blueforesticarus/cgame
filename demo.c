@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     
     start_color();			/* Start color 			*/
     
-    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "glitch.ogg");
+    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "death_and_maiden.ogg");
     if (ret)
     {
         printf("Failed to start thread: %d\n", ret);
