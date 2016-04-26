@@ -124,6 +124,9 @@ int main(int argc, char *argv[]) {
                 color=0;
             }
         }
+		if(!run){
+			break;
+		}
         refresh();
         usleep(10000);
      }
@@ -187,7 +190,7 @@ int main(int argc, char *argv[]) {
             attron(COLOR_PAIR(100));
     
             for(i = 0 ; i<120 ; i++){			
-                if( abs(stars[i].x-1 - maxx/2) >= progress2 ) continue;
+                if( abs(stars[i].x - maxx/2) + 1 >= progress2 ) continue;
                 //if(starState != (i%2==0)){
                 if(random_number(0,100)>75){
                      mvaddch(stars[i].y, stars[i].x, (char)32);	
