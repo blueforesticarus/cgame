@@ -8,7 +8,7 @@ typedef struct
   SNDFILE *sndFile;
   SF_INFO sfInfo;
   int position;
-} OurData;
+} adata_t;
 
 /*
 Callback function for audio output
@@ -20,7 +20,7 @@ int Callback(const void *input,
              PaStreamCallbackFlags statusFlags,
              void *userData)
 {
-  OurData *data = (OurData *)userData; /* we passed a data structure
+  adata_t *data = (adata_t *)userData; /* we passed a data structure
 into the callback so we have something to work with */
   int *cursor; /* current pointer into the output  */
   int *out = (int *)output;
@@ -65,7 +65,7 @@ sf_readf_int's requirements */
 
 void handle_sound(char* filepath)
 {
-  OurData *data = (OurData *)malloc(sizeof(OurData));
+  adata_t *data = (adata_t *)malloc(sizeof(adata_t));
   PaStream *stream;
   PaError error;
   PaStreamParameters outputParameters;
