@@ -38,6 +38,7 @@ char user_in;
 
 int main(int argc, char *argv[]) {
 	char* current_term = getenv("TERM");
+	char* new_term = malloc(sizeof current_term + 15);
 	int j, needs_update = 1;
 	for (j = 0; j < strlen(current_term); j++)
 	{
@@ -52,13 +53,13 @@ int main(int argc, char *argv[]) {
 	}
 	if (needs_update)
 	{
-		char* new_term = malloc(sizeof current_term + 10);
-		strcpy(new_term, current_term);
+		strcat(new_term, "TERM=");
+		strcat(new_term, current_term);
 		strcat(new_term, "-256color");
-		putenv(current_term);
+		putenv(new_term);
 	}
-
-    signal(SIGINT, killer);
+    
+	signal(SIGINT, killer);
 
     initscr();
     noecho();
