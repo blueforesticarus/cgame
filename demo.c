@@ -37,6 +37,7 @@ struct vec2 stars[STARCOUNT];
 char user_in;
 
 int main(int argc, char *argv[]) {
+	putenv("TERM=xterm-256color");
     signal(SIGINT, killer);
 
     initscr();
