@@ -38,16 +38,23 @@ char user_in;
 
 int main(int argc, char *argv[]) {
 	char* current_term = getenv("TERM");
-	int j;
+	int j, needs_update = 0;
 	for (j = 0; j < strlen(current_term); j++)
 	{
 		if (current_term[j] == '-')
 		{
 			if (strcmp(current_term + j, "-256color") == 0)
-				break;
+				needs_update = 1;;
 		}
-	putenv("TERM=xterm-256color");
 	}
+	if (needs_update)
+	{
+		char* new_term = malloc(sizeof current_term + 10);
+		strcpy(new_term, current_term);
+		strcat(new_term, "-256color");
+		putenv(current_term);
+	}
+
     signal(SIGINT, killer);
 
     initscr();
