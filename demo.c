@@ -11,7 +11,11 @@
 
 #include "sound.c"
 
+#ifdef KEY_ENTER
+	#undef KEY_ENTER
+#endif
 #define KEY_ENTER 10
+
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 #define SAMPLE_RATE 44100
 #define STARCOUNT 1000
@@ -36,9 +40,12 @@ struct vec2{
 
 struct vec2 stars[STARCOUNT];
 
+const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .thread_complete = 0};
+
 char user_in;
 
 int main(int argc, char *argv[]) {
+
 	signal(SIGINT, killer);
 
     initscr();
@@ -51,7 +58,10 @@ int main(int argc, char *argv[]) {
     
     start_color();			/* Start color 			*/
     
-    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "death_and_maiden.ogg");
+	adata_t mthread_status = DEFAULT_THREAD_STATUS;
+	adata_t fxthread_status = DEFAULT_THREAD_STATUS;
+	mthread_status.filepath = "death_and_maiden.ogg";
+    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, &mthread_status);
     if (ret)
     {
         printf("Failed to start thread: %d\n", ret);
@@ -240,24 +250,30 @@ int main(int argc, char *argv[]) {
           }
           user_in = getch();
 		  if (user_in == 'q' || user_in == 'Q') run = 0;
-           if (user_in == KEY_ENTER && progress3 >= 25)
-           {
-           	int ret = pthread_create(&st, NULL, (void *) &handle_sound, "enter.ogg");
+          
+		  if (user_in == KEY_ENTER && progress3 >= 25)
+          {
+		  	fxthread_status.filepath = "enter.ogg";
+           	int ret = pthread_create(&st, NULL, (void *) &handle_sound, &fxthread_status);
             if (ret)
             {
                 printf("Failed to start thread: %d\n", ret);
                 exit(ret);
             }	
-           }
-           refresh();
-           re=(int)rem;
-           if(rem < 5) rem+=.1;
+          }
+		  
+		  if (user_in == '-') mthread_status.volume -= 0.05;
+		  
+		  if (user_in == '+' || user_in == '=') mthread_status.volume += 0.5;
+          refresh();
+          re=(int)rem;
+          if(rem < 5) rem+=.1;
            
        }else{
            re--;
        }
        free(text);
-    
+
        usleep(sleeper); 
     
      }

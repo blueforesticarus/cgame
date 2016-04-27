@@ -7,8 +7,13 @@ typedef struct
 {
   SNDFILE *sndFile;
   SF_INFO sfInfo;
+  char* filepath;
   int position;
+  volatile int thread_complete;
+  volatile double volume;
 } adata_t;
+
+
 
 /*
 Callback function for audio output
@@ -50,7 +55,9 @@ int Callback(const void *input,
 
     /* since our output format and channel interleaving is the same as sf_readf_int's requirements */
     /* we'll just read straight into the output buffer */
-    sf_readf_int(data->sndFile, cursor, thisRead);
+    
+	sf_readf_int(data->sndFile, cursor, thisRead);
+	int i; for (i = 0; i < thisRead; i++) cursor[i] = (cursor[i] * data->volume);
     /* increment the output cursor*/
     cursor += thisRead;
     /* decrement the number of samples left to process */
@@ -61,9 +68,8 @@ int Callback(const void *input,
 }
 
 
-void handle_sound(char* filepath)
+void handle_sound(adata_t *data)
 {
-  adata_t *data = (adata_t *)malloc(sizeof(adata_t));
   PaStream *stream;
   PaError error;
   PaStreamParameters outputParameters;
@@ -72,7 +78,7 @@ void handle_sound(char* filepath)
   data->position = 0;
   data->sfInfo.format = SF_FORMAT_OGG;
   /* try to open the file */
-  data->sndFile = sf_open(filepath, SFM_READ, &data->sfInfo);
+  data->sndFile = sf_open(data->filepath, SFM_READ, &data->sfInfo);
 
   if (!data->sndFile)
   {
@@ -112,7 +118,8 @@ void handle_sound(char* filepath)
   Pa_StartStream(stream);
   long ms_length = ((double)data->sfInfo.frames / (double)data->sfInfo.samplerate) * 1000.;
   Pa_Sleep(ms_length); 
-  Pa_StopStream(stream); // stop the stream
+  Pa_CloseStream(stream); // stop the stream
+  (*data).thread_complete = 1;
   Pa_Terminate(); // and shut down portaudio
 }
 
