@@ -20,8 +20,7 @@ int Callback(const void *input,
              PaStreamCallbackFlags statusFlags,
              void *userData)
 {
-  adata_t *data = (adata_t *)userData; /* we passed a data structure
-into the callback so we have something to work with */
+  adata_t *data = (adata_t *)userData; /* we passed a data structure into the callback so we have something to work with */
   int *cursor; /* current pointer into the output  */
   int *out = (int *)output;
   int thisSize = frameCount;
@@ -49,8 +48,7 @@ into the callback so we have something to work with */
       data->position += thisRead;
     }
 
-    /* since our output format and channel interleaving is the same as
-sf_readf_int's requirements */
+    /* since our output format and channel interleaving is the same as sf_readf_int's requirements */
     /* we'll just read straight into the output buffer */
     sf_readf_int(data->sndFile, cursor, thisRead);
     /* increment the output cursor*/
@@ -79,35 +77,28 @@ void handle_sound(char* filepath)
   if (!data->sndFile)
   {
     printf("error opening file\n");
-    return 1;
+    exit(1);
   }
 
   /* start portaudio */
   Pa_Initialize();
 
   /* set the output parameters */
-  outputParameters.device = Pa_GetDefaultOutputDevice(); /* use the
-default device */
-  outputParameters.channelCount = data->sfInfo.channels; /* use the
-same number of channels as our sound file */
+  outputParameters.device = Pa_GetDefaultOutputDevice(); /* use the default device */
+  outputParameters.channelCount = data->sfInfo.channels; /* use the same number of channels as our sound file */
   outputParameters.sampleFormat = paInt32; /* 32bit int format */
-  outputParameters.suggestedLatency = 0.2; /* 200 ms ought to satisfy
-even the worst sound card */
+  outputParameters.suggestedLatency = 0.2; /* 200 ms ought to satisfy even the worst sound card */
   outputParameters.hostApiSpecificStreamInfo = 0; /* no api specific data */
 
   /* try to open the output */
-  error = Pa_OpenStream(&stream,  /* stream is a 'token' that we need
-to save for future portaudio calls */
+  error = Pa_OpenStream(&stream,  /* stream is a 'token' that we need to save for future portaudio calls */
                         0,  /* no input */
                         &outputParameters,
-                        data->sfInfo.samplerate,  /* use the same
-sample rate as the sound file */
-                        paFramesPerBufferUnspecified,  /* let
-portaudio choose the buffersize */
+                        data->sfInfo.samplerate,  /* use the same sample rate as the sound file */
+                        paFramesPerBufferUnspecified,  /* let portaudio choose the buffersize */
                         paNoFlag,  /* no special modes (clip off, dither off) */
                         Callback,  /* callback function defined above */
-                        data ); /* pass in our data structure so the
-callback knows what's up */
+                        data ); /* pass in our data structure so the callback knows what's up */
 
   /* if we can't open it, then bail out */
   if (error)

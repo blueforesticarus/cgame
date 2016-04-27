@@ -1,11 +1,13 @@
 // demo.c
 #include <stdlib.h>
+#include <stdio.h>
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #include "sound.c"
 
@@ -37,18 +39,7 @@ struct vec2 stars[STARCOUNT];
 char user_in;
 
 int main(int argc, char *argv[]) {
-	char* current_term = getenv("TERM");
-	int j;
-	for (j = 0; j < strlen(current_term); j++)
-	{
-		if (current_term[j] == '-')
-		{
-			if (strcmp(current_term + j, "-256color") == 0)
-				break;
-		}
-	putenv("TERM=xterm-256color");
-	}
-    signal(SIGINT, killer);
+	signal(SIGINT, killer);
 
     initscr();
     noecho();
@@ -251,8 +242,7 @@ int main(int argc, char *argv[]) {
             }
           }
           user_in = getch();
-		  if (user_in == 'q' || user_in == 'Q')
-		  	run = 0;
+		  if (user_in == 'q' || user_in == 'Q') run = 0;
            if (user_in == KEY_ENTER && progress3 >= 25)
            {
            	int ret = pthread_create(&st, NULL, (void *) &handle_sound, "enter.ogg");
