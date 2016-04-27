@@ -1,11 +1,13 @@
 // demo.c
 #include <stdlib.h>
+#include <stdio.h>
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #include "sound.c"
 
@@ -37,28 +39,6 @@ struct vec2 stars[STARCOUNT];
 char user_in;
 
 int main(int argc, char *argv[]) {
-	char* current_term = getenv("TERM");
-	char* new_term = malloc(100);
-	int j, needs_update = 1;
-	for (j = 0; j < strlen(current_term); j++)
-	{
-		if (current_term[j] == '-')
-		{
-			if (strcmp(current_term + j, "-256color") == 0)
-			{
-				needs_update = 0;
-				break;
-			}
-		}
-	}
-	if (needs_update)
-	{
-		strcat(new_term, "TERM=");
-		strcat(new_term, current_term);
-		strcat(new_term, "-256color");
-		putenv(new_term);
-	}
-    
 	signal(SIGINT, killer);
 
     initscr();
@@ -71,7 +51,7 @@ int main(int argc, char *argv[]) {
     
     start_color();			/* Start color 			*/
     
-    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "glitch.ogg");
+    int ret = pthread_create(&mt, NULL, (void *) &handle_sound, "death_and_maiden.ogg");
     if (ret)
     {
         printf("Failed to start thread: %d\n", ret);

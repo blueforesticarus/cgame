@@ -77,7 +77,7 @@ void handle_sound(char* filepath)
   if (!data->sndFile)
   {
     printf("error opening file\n");
-    return 1;
+    exit(1);
   }
 
   /* start portaudio */
