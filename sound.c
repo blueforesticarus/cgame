@@ -5,9 +5,10 @@
 
 typedef struct
 {
-  SNDFILE *sndFile;
-  SF_INFO sfInfo;
+  SNDFILE *sndFile, *injFile;
+  SF_INFO sfInfo, injInfo;
   char* filepath;
+  int inject_audio;
   int position;
   volatile int thread_complete;
   volatile double volume;
@@ -15,9 +16,6 @@ typedef struct
 
 
 
-/*
-Callback function for audio output
-*/
 int Callback(const void *input,
              void *output,
              unsigned long frameCount,
@@ -27,6 +25,7 @@ int Callback(const void *input,
 {
   adata_t *data = (adata_t *)userData; /* we passed a data structure into the callback so we have something to work with */
   int *cursor; /* current pointer into the output  */
+  int *inject_buff;
   int *out = (int *)output;
   int thisSize = frameCount;
   int thisRead;
@@ -57,7 +56,7 @@ int Callback(const void *input,
     /* we'll just read straight into the output buffer */
     
 	sf_readf_int(data->sndFile, cursor, thisRead);
-	int i; for (i = 0; i < thisRead; i++) cursor[i] = (cursor[i] * data->volume);
+	int i; for (i = 0; i < thisRead; i++) cursor[i] *= data->volume;
     /* increment the output cursor*/
     cursor += thisRead;
     /* decrement the number of samples left to process */
@@ -123,3 +122,9 @@ void handle_sound(adata_t *data)
   Pa_Terminate(); // and shut down portaudio
 }
 
+void inject_audio(adata_t* adata, char* filepath)
+{
+	adata->injInfo.format = SF_FORMAT_OGG;
+	adata->injFile = sf_open(filepath, SFM_READ, &adata->injInfo);
+	adata->inject_audio = 1;
+}

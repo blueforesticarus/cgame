@@ -252,8 +252,11 @@ int main(int argc, char *argv[]) {
             }
           }
           user_in = getch();
-		  if (user_in == 'q' || user_in == 'Q') run = 0;
-          
+		  if (user_in == 'q' || user_in == 'Q') 
+		  	{
+			run = 0;
+			}
+
 		  if (user_in == KEY_ENTER && progress3 >= 25)
           {
 		  	fxthread_status.filepath = "enter.ogg";
@@ -276,14 +279,14 @@ int main(int argc, char *argv[]) {
            re--;
        }
        free(text);
-
+	   if (mthread_status.thread_complete) mthread_status = DEFAULT_THREAD_STATUS;
+	   if (fxthread_status.thread_complete) fxthread_status = DEFAULT_THREAD_STATUS;
        usleep(sleeper); 
     
      }
     
     
      endwin(); // Restore normal terminal behavior
-     Pa_Terminate();
 }
 
 void genstars(int num){
