@@ -7,8 +7,8 @@ typedef struct
 {
   SNDFILE *sndFile, *injFile;
   SF_INFO sfInfo, injInfo;
-  char* filepath;
-  int inject_audio;
+  volatile char* filepath;
+  volatile int inject_audio;
   int position;
   volatile int thread_complete;
   volatile double volume;
@@ -110,7 +110,6 @@ void handle_sound(adata_t *data)
   {
     printf("error opening output, error code = %i\n", error);
     Pa_Terminate();
-    exit(1);
   }
 
   /* when we start the stream, the callback starts getting called */
