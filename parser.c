@@ -80,7 +80,7 @@ typedef struct {
 	short num_states;		//number of states
 
 	color colors[255];	//array of colors used by entity
-	short colormap[255];		//colormap
+	char colormap[256];		//colormap, each char goes to a color
 } ated;
 
 typedef struct {
@@ -106,6 +106,7 @@ void test(){
 
 	ated myentitydef = parse(buf);
 	printfn("Name: %s",myentitydef.name);
+
 	usleep(500000);
 
 	initscr();
@@ -144,10 +145,11 @@ rstring read_file(char* filename){
 	if (f)
 	{
 		fseek (f, 0, SEEK_END);
-		//TODO: shouldnt it be one more than this
-		text.length = ftell (f);
+		//length = max index +1
+		text.length = ftell (f) ;
 		fseek (f, 0, SEEK_SET);
-		//note: must free text later
+		//note: must free text.text later
+		//note: text.text is not null terminated
 		text.text = malloc (text.length);
 		if (text.text){
 			fread (text.text, 1, text.length, f);
@@ -168,10 +170,8 @@ char get_byte(rstring* buff){
 		(*buff).position=0;
 	}
 
-	return c;
-
-	//TODO get stuff below working
-	if(c==92){
+	//NOTE: temp removed support for backslash escapes
+	if(c==92 && false){
 		//handle backslash escaping
 		c = (*buff).text[(*buff).position];
 		//TODO add support for \n \t etc
@@ -211,6 +211,8 @@ ated parse(rstring text){
 		}
 		else if(character==SEGMENT_DELIMIT){
 			buffer[len]=0;//null terminate the buffer
+			len+=1;//leaving room for null terminator, man is it a pain to have to remember that
+			//TODO look into strncpy and make sure we are really mallocing enough bytes
 
 			printf("Header: ");
 			fwrite(buffer, 1, len, stdout);
@@ -222,7 +224,6 @@ ated parse(rstring text){
 					break;				
 				case 1:
 					//name
-					//TODO MUST FIX, this may result in undefined behavior, I think that I may have to malloc an extra byte for the null terminator
 					entityDef.name = malloc(len*sizeof(char));
 					strncpy(entityDef.name, buffer, len);
 					break;				
@@ -253,10 +254,33 @@ ated parse(rstring text){
 					//states
 					entityDef.num_states = strtol(buffer, NULL, 10);
 					entityDef.states = malloc(entityDef.num_states*sizeof(ated_state));
-					break;		
+					break;	
 				case 8:
+					//TODO test this
+					{
+					//colormapping
+					int index = 0;
+					int num = 1;//color mapping zero is reserved
+					//TODO this could handle errors better
+					while(index<len){
+						//ex "c|255|000|020|"
+						char id = buffer[index];
+						color c;
+						c.r=strtol(buffer+index+2, NULL, 10);
+						c.g=strtol(buffer+index+6, NULL, 10);
+						c.b=strtol(buffer+index+10, NULL, 10);
+						index+=14;
+						entityDef.colormap[id]=num;
+						entityDef.colors[num]=c;
+						num++;
+					}
+					break;
+					}
+				case 9:
 					//end of header data, break out of for loop
 					header_flg = 0;
+					break;
+
 			}
 			segment++;
 			len=0;
@@ -266,18 +290,31 @@ ated parse(rstring text){
 		}
 	}
 
-	text.position = i;//start of data segment of the config (symbols, colors, hitbox)
+	//text.position = i; DO NOT DO THIS, char gotten from text does not correspond to position due to escapes and newlines
+	//Begin Scanning for symbol, color, and hitbox data
 	printfn("%d, %d, %d",entityDef.rows, entityDef.columns, entityDef.block);
-	//printfn("Data:%s", data); doesn't work with buffer model
+	//printfn("Data:%s", data); doesn't work with rstring
 
 	for(int n=0;n<entityDef.num_states;n++){
 		//fwrite(data + n*entityDef.block,1,entityDef.block,stdout); putchar('\n');
 		//entityDef.states[n].symbols = substring(data + n*entityDef.block, entityDef.block);
 		
+		//symbols
 		entityDef.states[n].symbols = malloc(entityDef.block*sizeof(char));
 		for(int i=0; i<entityDef.block;i++){
+			entityDef.states[n].symbols[i]=get_byte(&text);
+		}
+		
+		//colormap
+		entityDef.states[n].colormap = malloc(entityDef.block*sizeof(char));
+		for(int i=0; i<entityDef.block;i++){
+			entityDef.states[n].colormap[i]=get_byte(&text);
+		}
 
-			entityDef.states[n].symbols[i]=get_byte(&text);	
+		//hitmap
+		entityDef.states[n].hitmap = malloc(entityDef.block*sizeof(char));
+		for(int i=0; i<entityDef.block;i++){
+			entityDef.states[n].hitmap[i]=get_byte(&text);
 		}
 	}
 
