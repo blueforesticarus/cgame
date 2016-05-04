@@ -40,7 +40,7 @@ struct vec2{
 
 struct vec2 stars[STARCOUNT];
 
-const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .thread_complete = 0};
+const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .volch = 0, .thread_complete = 0};
 
 char user_in;
 
@@ -268,9 +268,18 @@ int main(int argc, char *argv[]) {
             }	
           }
 		  
-		  if (user_in == '-') mthread_status.volume -= 0.05;
+		  if (user_in == '-')
+		  {
+		  	mthread_status.deltavol = -0.05;
+			mthread_status.volch = 1;
+		  }
 		  
-		  if (user_in == '+' || user_in == '=') mthread_status.volume += 0.5;
+		  if (user_in == '+' || user_in == '=')
+		  {
+		  	mthread_status.deltavol = 0.05;
+			mthread_status.volch = 1;
+		  }
+
           refresh();
           re=(int)rem;
           if(rem < 5) rem+=.1;

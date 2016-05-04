@@ -10,8 +10,10 @@ typedef struct
   volatile char* filepath;
   volatile int inject_audio;
   int position;
-  volatile int thread_complete;
   volatile double volume;
+  volatile double deltavol;
+  volatile int volch;
+  volatile int thread_complete;
 } adata_t;
 
 
@@ -56,7 +58,31 @@ int Callback(const void *input,
     /* we'll just read straight into the output buffer */
     
 	sf_readf_int(data->sndFile, cursor, thisRead);
-	int i; for (i = 0; i < thisRead; i++) cursor[i] *= data->volume;
+	int i;
+	for (i = 0; i < thisRead; i++)
+	{
+		if (data->volch)
+		{
+			if (data->deltavol > 0)
+			{
+				data->volume += 0.001;
+				data->deltavol -= 0.001;
+			}
+
+			if (data->deltavol < 0)
+			{
+				data->volume -= 0.001;
+				data->deltavol += 0.001;
+			}
+
+			if (data->deltavol == 0)
+			{
+				data->volch = 0;
+			}
+		}
+		
+		cursor[i] *= data->volume;
+	}
     /* increment the output cursor*/
     cursor += thisRead;
     /* decrement the number of samples left to process */

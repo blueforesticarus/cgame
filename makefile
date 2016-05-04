@@ -1,4 +1,4 @@
 # Makefile
-LDFLAGS=-Wall -Wextra -Wpedantic -lncurses -lsndfile -lportaudio -lpthread
+LDFLAGS=-Wall -Wextra -Wpedantic -lncursesw -lsndfile -lportaudio -lpthread
 
 all: demo
