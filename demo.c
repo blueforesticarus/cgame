@@ -344,6 +344,7 @@ char *getstring(int length){
  for(;length>0;length--){
   mystring = malloc(strlen(mystring)+1);
   char pop = getchar();
+typedef struct myStruct someStruct;
   strcat(mystring, &pop);
  }
 
