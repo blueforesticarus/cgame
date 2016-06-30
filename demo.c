@@ -31,8 +31,8 @@ pthread_t mt; // music thread.
 pthread_t st; // sound fx thread
 
 static volatile int run = 1;
-int maxx, maxy;
 
+int maxx, maxy;
 struct vec2{
     int x;
     int y;

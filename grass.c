@@ -8,22 +8,19 @@
 #include <string.h>
 #include <signal.h>
 //this file explores to idea of rendering grass waves by simulating presure waves in in the air (wind)
-//I think i have the presure nodes working well
-//but the rendering of it to the slash marks is done wrong.
-//right now high presure = right low = left
-//it should look at the motion of the nodes (wind) as indicators.
-//
+//as this is now it may be useful for something else, but I dont think that wind rendering in this fasion can be done in a quick or effective way
+
 //could also just implement a waze function, but it wouldnt look as nice
 //if i get this to work there is going to be alot of wind and grass in this game
 
-#define COUNT_WIND_NODES 10	//number of presure nodes
-#define WIND_INTERPLAY .01	//coeficient of force between high and low pressure nodes
-#define WIND_EFFECT_CAP 9	//no distances treated as closer than 3 when calculating grass sway
+#define COUNT_WIND_NODES 10 //number of presure nodes
+#define WIND_INTERPLAY .02	//coeficient of force between high and low pressure nodes
+#define WIND_EFFECT_CAP 16 //no distances treated as closer than 3 when calculating grass sway
 #define WIND_EFFECT_MULTIPLIER 1 //wind effect
 #define DELAY 10000			//frame delay
 #define CUTOFF 50
 
-#define DEBUG_NODES false
+#define DEBUG_NODES true
 
 int random_number(int min_num, int max_num);
 float random_float(float min, float max);
@@ -106,19 +103,25 @@ int main(int arg , char *argc[]){
 						m*= 1 - ((nodes[i].y-maxy) / CUTOFF);
 					}
 
-					divisor += 1./distance_sqr;
-					total += nodes[i].s/distance_sqr * m;
+					if (nodes[i].s>0){
+						divisor += nodes[i].s/distance_sqr;
+						total += nodes[i].sx * nodes[i].s/distance_sqr * m;	
+					}else{
+						divisor -= nodes[i].s/distance_sqr;
+						total -= nodes[i].sx * nodes[i].s/distance_sqr * m;
+					}
+	
 				}
 
 				total /= divisor;
 				total *= WIND_EFFECT_MULTIPLIER;
 
-				if(total > 20){
+				if(total > 1){
 					frame[x+(y*maxx)] = '/';
 
 					attron(COLOR_PAIR(101));
 					mvaddch(y,x,'/');
-				}else if (total < -20){
+				}else if (total < -1){
 					frame[x+(y*maxx)] = '\\';
 
 					attron(COLOR_PAIR(103));
@@ -134,7 +137,7 @@ int main(int arg , char *argc[]){
 
 		//mvaddstr(0,0,frame);
 		
-		
+		attron(COLOR_PAIR(1));
 		for(i=0; i<COUNT_WIND_NODES && DEBUG_NODES; ++i){
 			if(nodes[i].s > 20){
 				mvaddch(nodes[i].y, nodes[i].x, '+');
@@ -172,16 +175,23 @@ void update(){
 			nodes[i].sy += force * dy / distance;	
 		}
 
-		float speed = .5;
+		float speed = .003 * maxx;
 		nodes[i].x += nodes[i].sx * speed;
 		nodes[i].y += nodes[i].sy * speed/2;
 
 		if ( nodes[i].x > maxx + CUTOFF || nodes[i].y < -CUTOFF || nodes[i].y > maxy + CUTOFF || nodes[i].x < - (CUTOFF + 10) ){
 			//off screen
-			nodes[i].x = -CUTOFF;
+
 			nodes[i].y = random_float(maxy/7.0, 6.0*maxy/7.0);
 			nodes[i].s = random_float(-100,100);
-			nodes[i].sx = random_float(.5, 2);
+			if (nodes[i].s > 0 || true){
+				nodes[i].x = -CUTOFF;
+				nodes[i].sx = random_float(.5, 2);
+			}else{
+				nodes[i].x = maxx + CUTOFF;
+		        nodes[i].sx = random_float(-.5, -2);					
+			} 
+
 			nodes[i].sy = random_float(-.2, .2); 
 		}
 	}
