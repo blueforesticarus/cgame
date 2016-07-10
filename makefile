@@ -1,4 +1,6 @@
 # Makefile
-LDFLAGS=-Wall -Wextra -Wpedantic -g -lncursesw -lsndfile -lportaudio -lpthread
+CC=gcc
+LDFLAGS=-Wall -Wextra -Wpedantic -g 
+LDLIBS=-lncursesw -lsndfile -lportaudio -lpthread
 
 all: demo parser aquarius
