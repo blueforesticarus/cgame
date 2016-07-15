@@ -27,6 +27,8 @@
 #define SEGMENT_BUFFER_LEN 1000
 #define SEGMENT_DELIMIT '='
 
+char* concat(char *s1, char *s2);
+
 void printfn(const char *fmt, ...){
 	va_list args;
 	va_start(args, fmt);
@@ -93,19 +95,23 @@ typedef struct {
 rstring read_file(char* filename);
 ated parse(rstring text);
 void dealloc_ated(ated object);
+char* stringify(ated entityDef);
+ated createEntityDef(char* name, int rows, int cols, int states);
 void test();
 
+#ifdef TEST
 int main(int argc, char *argv[]) {
 	test();
 }
+#endif
 
 void test(){
-	printf("running test\n");
+	printf("running parser test\n");
 
 	rstring buf = read_file("parsetest.ated");
 
 	ated myentitydef = parse(buf);
-	printfn("Name: %s",myentitydef.name);
+	//printfn("Name: %s",myentitydef.name);
 
 	usleep(500000);
 
@@ -126,7 +132,19 @@ void test(){
 	}
 
 	endwin();	
-	dealloc_ated(myentitydef); 
+
+	printf(stringify(myentitydef));
+
+	///*
+	ated newEntidtyDef = createEntityDef("demoland", 75,250,1);
+	printf(newEntidtyDef.name);
+	char* data = stringify(newEntidtyDef);
+	FILE *fp = fopen("demolandnew.ated", "ab");
+    if (fp != NULL){
+        fputs(data, fp);
+        fclose(fp);
+    }
+	//*/
 }
 
 
@@ -156,7 +174,7 @@ rstring read_file(char* filename){
 		}
 		fclose (f);
 	}
-	printf(text.text);
+	//printf(text.text);
 	return text;
 }
 
@@ -188,7 +206,6 @@ char get_byte(rstring* buff){
 }
 
 ated parse(rstring text){
-	printf("testing\n");
 	char buffer[SEGMENT_BUFFER_LEN];//create a buffer for parts of the file
 	int len=0;			//current length of string in buffer
 
@@ -214,13 +231,14 @@ ated parse(rstring text){
 			len+=1;//leaving room for null terminator, man is it a pain to have to remember that
 			//TODO look into strncpy and make sure we are really mallocing enough bytes
 
-			printf("Header: ");
-			fwrite(buffer, 1, len, stdout);
-			printf("\n\n");
+			//printf("Header: ");
+			//fwrite(buffer, 1, len, stdout);
+			//printf("\n\n");
 
 			switch(segment) {
 				case 0 :
-					//everything prior to first delimiter is a comment	
+					//everything prior to first delimiter is a comment
+					//TODO save this too for stringify
 					break;				
 				case 1:
 					//name
@@ -292,7 +310,7 @@ ated parse(rstring text){
 
 	//text.position = i; DO NOT DO THIS, char gotten from text does not correspond to position due to escapes and newlines
 	//Begin Scanning for symbol, color, and hitbox data
-	printfn("%d, %d, %d",entityDef.rows, entityDef.columns, entityDef.block);
+	//printfn("%d, %d, %d",entityDef.rows, entityDef.columns, entityDef.block);
 	//printfn("Data:%s", data); doesn't work with rstring
 
 	for(int n=0;n<entityDef.num_states;n++){
@@ -321,5 +339,80 @@ ated parse(rstring text){
 	return entityDef;
 }
 
+ated createEntityDef(char* name, int rows, int cols, int states){
+	ated newEntidtyDef;
+	newEntidtyDef.name = name;
+	newEntidtyDef.rows = rows;
+	newEntidtyDef.columns = cols;
+	newEntidtyDef.num_states = states;
+	return newEntidtyDef;
+}
 
+char* stringify(ated entityDef){
+	char* string = "=\n";
+	char buffer[100];
+	
+	string = concat(string, entityDef.name);
+	string = concat(string, "\n=\n");
+	string = concat(string, entityDef.display);
+	string = concat(string, "\n=\n");
+	string = concat(string, entityDef.description);
+	string = concat(string, "\n=\n");
+	snprintf(buffer,10,"%d",entityDef.id);
+	string = concat(string, buffer);
+	string = concat(string, "\n=\n");
+	snprintf(buffer,10,"%d",entityDef.columns);
+	string = concat(string, buffer);
+	string = concat(string, "\n=\n");
+	snprintf(buffer,10,"%d",entityDef.rows);
+	string = concat(string, buffer);
+	string = concat(string, "\n=\n");
+	snprintf(buffer,10,"%d",entityDef.num_states);
+	string = concat(string, buffer);
+	string = concat(string, "\n=\n==\n");//TODO ignore color for now
 
+	printfn(string);
+
+	//TODO actually add text
+	char* charfill = malloc(sizeof(char) * (entityDef.columns+2));
+	char* hitfill = malloc(sizeof(char) * (entityDef.columns+2));
+	char* colorfill = malloc(sizeof(char) * (entityDef.columns+2));
+
+	for(int c = 0 ; c<entityDef.columns; c++){
+		charfill[c] = 'X';
+		hitfill[c] = 'N';
+		colorfill[c]='1';
+	}
+
+	charfill[entityDef.columns]='\n';
+	hitfill[entityDef.columns]='\n';
+	colorfill[entityDef.columns]='\n';
+	charfill[entityDef.columns+1]='\0';
+	hitfill[entityDef.columns+1]='\0';
+	colorfill[entityDef.columns+1]='\0';
+
+	for(int s = 0 ; s<entityDef.num_states; s++){
+		for(int r = 0 ; r<entityDef.rows; r++){
+			string = concat(string, charfill);
+		}
+		for(int r = 0 ; r<entityDef.rows; r++){
+			string = concat(string, colorfill);
+		}
+		for(int r = 0 ; r<entityDef.rows; r++){
+			string = concat(string, hitfill);
+		}
+	}
+
+	return string;
+}
+
+char* concat(char *s1, char *s2)
+{
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
+    char *result = malloc(len1+len2+1);//+1 for the zero-terminator
+    //in real code you would check for errors in malloc here
+    memcpy(result, s1, len1);
+    memcpy(result+len1, s2, len2+1);//+1 to copy the null-terminator
+    return result;
+}
