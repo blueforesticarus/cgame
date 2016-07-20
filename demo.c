@@ -40,7 +40,7 @@ struct vec2{
 
 struct vec2 stars[STARCOUNT];
 
-const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .volch = 0, .thread_complete = 0};
+const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .volch = 0, .thread_complete = 0, .thread_idle = 1};
 
 char user_in;
 
@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
 			run = 0;
 			}
 
-		  if (user_in == KEY_ENTER && progress3 >= 25)
+		  if (user_in == KEY_ENTER && progress3 >= 25 && fxthread_status.thread_idle)
           {
 		  	fxthread_status.filepath = "enter.ogg";
            	int ret = pthread_create(&st, NULL, (void *) &handle_sound, &fxthread_status);

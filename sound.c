@@ -14,6 +14,7 @@ typedef struct
   volatile double deltavol;
   volatile int volch;
   volatile int thread_complete;
+  volatile int thread_idle;
 } adata_t;
 
 
@@ -101,6 +102,7 @@ void handle_sound(adata_t *data)
 
   /* initialize our data structure */
   data->position = 0;
+  data->thread_idle = 0;
   data->sfInfo.format = SF_FORMAT_OGG;
   /* try to open the file */
   data->sndFile = sf_open(data->filepath, SFM_READ, &data->sfInfo);
