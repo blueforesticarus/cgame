@@ -58,8 +58,6 @@ int main(int argc, char *argv[]) {
 	//init_pair(landscape.colormap['B'],landscape.colormap['1'],landscape.colormap['B']);//TODO do properly
 	init_pair(landscape.colormap['1'],landscape.colormap['B'],landscape.colormap['B']);//this is hacky
 
-
-	char press;
 	vec2 newpos;
 	while(run){
 		start_frame = clock();
@@ -88,6 +86,7 @@ int main(int argc, char *argv[]) {
 		//attroff(A_BOLD);
 
 		if (show_framerate) mvprintw(0, 0, "%f", (delta_t));
+        if (ice_rink) mvprintw(0, 0, "Weeeee!");
 		refresh();
 		usleep(DELAY);
 
@@ -105,8 +104,9 @@ int main(int argc, char *argv[]) {
 		}else if(key == 'f'){
 			show_framerate += 1;
 			show_framerate %= 2;
-		}
-		press=key;
+		}else if(key == 'q'){
+            run = 0;
+        }
 
 		if(landscape.states[0].hitmap[newpos.x+newpos.y*landscape.columns] == 'N' || landscape.states[0].hitmap[newpos.x+newpos.y*landscape.columns] == 'n'){
 			//todo play sound
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
         if (landscape.states[0].hitmap[pos.x+pos.y*landscape.columns] == 'I') ice_rink = 1;
         else ice_rink = 0;
 	
-	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 10000; // this will give us the amount of time it took to render that frame in ms.
+	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 10000;
 	if (ice_rink == 0) rlbuff(delta_t);
 
 	}
