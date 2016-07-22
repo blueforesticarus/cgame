@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <ncurses.h>
 #include <signal.h>
+#include <time.h>
 
 #include "parser.c"
 
@@ -18,13 +19,18 @@
 	#define KEY_RIGHT 'd'
 #endif
 
-int run=1;
+void rlbuff(float delta_t); // Rate Limit the buffer
+
+int run=1, ice_rink = 0;
 void killer(int dummy){
  run=0;
 }
 
 vec2 pos;
 int maxx, maxy;
+clock_t start_frame;
+float delta_t = 0.0f;
+int show_framerate = 0;
 
 int main(int argc, char *argv[]) {
 	signal(SIGINT, killer);
@@ -56,6 +62,7 @@ int main(int argc, char *argv[]) {
 	char press;
 	vec2 newpos;
 	while(run){
+		start_frame = clock();
 		erase();
 
 		for(int c = 0 ; c<landscape.columns; c++){
@@ -80,6 +87,7 @@ int main(int argc, char *argv[]) {
 		}
 		//attroff(A_BOLD);
 
+		if (show_framerate) mvprintw(0, 0, "%f", (delta_t));
 		refresh();
 		usleep(DELAY);
 
@@ -94,6 +102,9 @@ int main(int argc, char *argv[]) {
 			newpos.x+=1;
 		}else if(key == KEY_LEFT){
 			newpos.x-=1;
+		}else if(key == 'f'){
+			show_framerate += 1;
+			show_framerate %= 2;
 		}
 		press=key;
 
@@ -104,8 +115,17 @@ int main(int argc, char *argv[]) {
 			pos.y=newpos.y;
 		}
 
+        if (landscape.states[0].hitmap[pos.x+pos.y*landscape.columns] == 'I') ice_rink = 1;
+        else ice_rink = 0;
+	
+	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 10000; // this will give us the amount of time it took to render that frame in ms.
+	if (ice_rink == 0) rlbuff(delta_t);
 
 	}
 	endwin();	
 }
 
+void rlbuff(float delta_t){ // Rate limit the buffer
+	int num_keypress = (int) (delta_t * 0.15);
+	while (num_keypress--) getch();
+}
