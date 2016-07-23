@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
         if (landscape.states[0].hitmap[pos.x+pos.y*landscape.columns] == 'I') ice_rink = 1;
         else ice_rink = 0;
 	
-	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 10000;
+	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 1000;
 	if (ice_rink == 0) rlbuff(delta_t);
 
 	}
@@ -126,6 +126,6 @@ int main(int argc, char *argv[]) {
 }
 
 void rlbuff(float delta_t){ // Rate limit the buffer
-	int num_keypress = (int) (delta_t * 0.15);
+	int num_keypress = (int) (delta_t * 1.5);
 	while (num_keypress--) getch();
 }
