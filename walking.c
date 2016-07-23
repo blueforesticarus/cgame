@@ -20,6 +20,7 @@
 #endif
 
 void rlbuff(float delta_t); // Rate Limit the buffer
+float get_timespec_diff_ms(struct timespec start, struct timespec end);
 
 int run=1, ice_rink = 0;
 void killer(int dummy){
@@ -28,7 +29,7 @@ void killer(int dummy){
 
 vec2 pos;
 int maxx, maxy;
-clock_t start_frame;
+struct timespec start_frame, end_frame;
 float delta_t = 0.0f;
 int show_framerate = 0;
 
@@ -60,7 +61,7 @@ int main(int argc, char *argv[]) {
 
 	vec2 newpos;
 	while(run){
-		start_frame = clock();
+		clock_gettime(CLOCK_REALTIME, &start_frame);
 		erase();
 
 		for(int c = 0 ; c<landscape.columns; c++){
@@ -85,7 +86,7 @@ int main(int argc, char *argv[]) {
 		}
 		//attroff(A_BOLD);
 
-		if (show_framerate) mvprintw(0, 0, "%f", (delta_t));
+		if (show_framerate) mvprintw(1, 0, "%f", (delta_t));
         if (ice_rink) mvprintw(0, 0, "Weeeee!");
 		refresh();
 		usleep(DELAY);
@@ -118,7 +119,8 @@ int main(int argc, char *argv[]) {
         if (landscape.states[0].hitmap[pos.x+pos.y*landscape.columns] == 'I') ice_rink = 1;
         else ice_rink = 0;
 	
-	delta_t = ((float)(clock() - start_frame) / (float) CLOCKS_PER_SEC) * 1000;
+    clock_gettime(CLOCK_REALTIME, &end_frame);
+	delta_t = get_timespec_diff_ms(start_frame, end_frame);
 	if (ice_rink == 0) rlbuff(delta_t);
 
 	}
@@ -126,6 +128,10 @@ int main(int argc, char *argv[]) {
 }
 
 void rlbuff(float delta_t){ // Rate limit the buffer
-	int num_keypress = (int) (delta_t * 1.5);
+	int num_keypress = (int) (delta_t * 15);
 	while (num_keypress--) getch();
+}
+
+float get_timespec_diff_ms(struct timespec start, struct timespec end){
+    return ((float)(end.tv_sec - start.tv_sec) * 1000.0) + ((float)(end.tv_nsec - start.tv_nsec) / 1000000.0);
 }
