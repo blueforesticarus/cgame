@@ -1,0 +1,26 @@
+Okay, so here is my current plan for how the game should be setup. 
+There are a number of isolated systems of this game which can be developed seperately untill we have something which can be used for a demo.
+Some of these have already been started...
+
+Parser: should be able to load and save ated, uted, cep, sps and other files.
+Sound: should have a comprehensive system for loading and playing sound effects and music
+Loaded: this is the intro to the game, I will have to rewrite this with comments
+
+Some other components which must be written...
+
+
+Engine: ties everything togeather, executes mob ai's, calculates and tracks damage, health, drops, etc.
+Player: keeps track of player's non-engine data, interfaces with parser to load/save. 
+Interface: player input, inventory display, HUD etc.
+Compositer: composes maps from loaded parts, creates render layers, renders to screen each frame.
+Network: creates connection server, connects to other servers, must interface with engine and player code. This is the hardest part.
+
+
+Some down the line things...
+
+Generator: this will be needed if we want any sort of proceduiral generation of landscapes.
+Dialog: for chat between players and between ROOT and the player. 
+
+As for now, I want to start working on the compositor/displayer. I think everything else fans out from there.
+However I really want to hammer out how the whole thing should work first, because this part needs to be well designed.
+We should discuss it on mumble later.
