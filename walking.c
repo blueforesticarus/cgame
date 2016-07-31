@@ -81,21 +81,31 @@ int main(int argc, char *argv[]) {
 		}
 		
 		//attron(A_BOLD | A_DIM);
-		if(landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'B' ){
-			if(landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'H' && landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'n' ){
+		if(landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'B' &&\
+		   landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'H' &&\
+           landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'n' ){
 				attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[pos.x+(pos.y-1)*landscape.columns]] ));
 				mvaddch(pos.y-1,pos.x,'o');
+		}
+		if(landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'B' &&\
+		   landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'T' ){
+			attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[pos.x+pos.y*landscape.columns]] ));
+			mvaddch(pos.y,pos.x,'|');
+		}
+    
+        // now do the same thing for Mr. M
+        if(landscape.states[0].hitmap[mobpos.x+(mobpos.y-1)*landscape.columns] != 'B' &&\
+		   landscape.states[0].hitmap[mobpos.x+(mobpos.y-1)*landscape.columns] != 'H' &&\
+           landscape.states[0].hitmap[mobpos.x+(pos.y-1)*landscape.columns] != 'n' ){
+		    attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[mobpos.x+(pos.y-1)*landscape.columns]] ));
+			mvaddch(mobpos.y-1,mobpos.x,'M');
+		}
+		if(landscape.states[0].hitmap[mobpos.x+(mobpos.y)*landscape.columns] != 'B' &&\
+		   landscape.states[0].hitmap[mobpos.x+(mobpos.y)*landscape.columns] != 'T' &&\
+           pos.y != mobpos.y + 1 || pos.x != mobpos.x){
+    		attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[mobpos.x+mobpos.y*landscape.columns]] ));
+			mvaddch(mobpos.y,mobpos.x,'|');
 			}
-		}
-		if(landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'B' ){
-			if(landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'T' ){
-				attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[pos.x+pos.y*landscape.columns]] ));
-				mvaddch(pos.y,pos.x,'|');
-			}	
-		}
-        
-        mvaddch(mobpos.y - 1, mobpos.x, 'M');
-        mvaddch(mobpos.y, mobpos.x, '|');
 		//attroff(A_BOLD);
 
 		if (show_framerate) mvprintw(1, 0, "%f", (delta_t));
@@ -133,7 +143,7 @@ int main(int argc, char *argv[]) {
 
     clock_gettime(CLOCK_REALTIME, &end_frame);
 	delta_t = get_timespec_diff_ms(start_frame, end_frame);
-	if (ice_rink) rlbuff(delta_t);
+	if (!ice_rink) rlbuff(delta_t);
 
 	}
 	endwin();	
