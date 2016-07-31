@@ -6,8 +6,10 @@
 #include <ncurses.h>
 #include <signal.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "parser.c"
+#include "embedpy.c"
 
 #define DELAY 50000
 
@@ -27,7 +29,8 @@ void killer(int dummy){
  run=0;
 }
 
-vec2 pos;
+pthread_t mt; // mob thread (mobs run in python)
+vec2 pos, mobpos;
 int maxx, maxy;
 struct timespec start_frame, end_frame;
 float delta_t = 0.0f;
@@ -35,7 +38,7 @@ int show_framerate = 0;
 
 int main(int argc, char *argv[]) {
 	signal(SIGINT, killer);
-
+    
     initscr();
     noecho();
     cbreak();
@@ -48,6 +51,12 @@ int main(int argc, char *argv[]) {
 	pos.x = 20;
 	pos.y = 20;
 	
+    mobpos.x = 30;
+    mobpos.y = 20;
+    
+    int ret = pthread_create(&mt, NULL, (void *) &embedpy, NULL);
+    
+
 	rstring buf = read_file("demoland.ated");
 	ated landscape = parse(buf);
 	
@@ -72,18 +81,21 @@ int main(int argc, char *argv[]) {
 		}
 		
 		//attron(A_BOLD | A_DIM);
-		if(landscape.states[0].hitmap[newpos.x+(pos.y-1)*landscape.columns] != 'B' ){
-			if(landscape.states[0].hitmap[newpos.x+(pos.y-1)*landscape.columns] != 'H' && landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'n' ){
+		if(landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'B' ){
+			if(landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'H' && landscape.states[0].hitmap[pos.x+(pos.y-1)*landscape.columns] != 'n' ){
 				attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[pos.x+(pos.y-1)*landscape.columns]] ));
 				mvaddch(pos.y-1,pos.x,'o');
 			}
 		}
-		if(landscape.states[0].hitmap[newpos.x+(pos.y)*landscape.columns] != 'B' ){
+		if(landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'B' ){
 			if(landscape.states[0].hitmap[pos.x+(pos.y)*landscape.columns] != 'T' ){
 				attron(COLOR_PAIR( landscape.colormap[landscape.states[0].colormap[pos.x+pos.y*landscape.columns]] ));
 				mvaddch(pos.y,pos.x,'|');
 			}	
 		}
+        
+        mvaddch(mobpos.y - 1, mobpos.x, 'M');
+        mvaddch(mobpos.y, mobpos.x, '|');
 		//attroff(A_BOLD);
 
 		if (show_framerate) mvprintw(1, 0, "%f", (delta_t));
@@ -105,7 +117,10 @@ int main(int argc, char *argv[]) {
 		}else if(key == 'f'){
 			show_framerate += 1;
 			show_framerate %= 2;
-		}else if(key == 'q'){
+		}else if(key == 'i'){
+            ice_rink += 1;
+            ice_rink %= 2;
+        }else if(key == 'q'){
             run = 0;
         }
 
@@ -116,12 +131,9 @@ int main(int argc, char *argv[]) {
 			pos.y=newpos.y;
 		}
 
-        if (landscape.states[0].hitmap[pos.x+pos.y*landscape.columns] == 'I') ice_rink = 1;
-        else ice_rink = 0;
-	
     clock_gettime(CLOCK_REALTIME, &end_frame);
 	delta_t = get_timespec_diff_ms(start_frame, end_frame);
-	if (ice_rink == 0) rlbuff(delta_t);
+	if (ice_rink) rlbuff(delta_t);
 
 	}
 	endwin();	
@@ -135,3 +147,4 @@ void rlbuff(float delta_t){ // Rate limit the buffer
 float get_timespec_diff_ms(struct timespec start, struct timespec end){
     return ((float)(end.tv_sec - start.tv_sec) * 1000.0) + ((float)(end.tv_nsec - start.tv_nsec) / 1000000.0);
 }
+

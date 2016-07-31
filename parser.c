@@ -16,6 +16,8 @@
 //	ascii data for each state
 //	color data for each state
 //	hitmapping for each state
+#ifndef PARSER_C
+#define PARSER_C
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -28,6 +30,11 @@
 #define SEGMENT_DELIMIT '='
 
 char* concat(char *s1, char *s2);
+
+#define UP 0
+#define RIGHT 1
+#define DOWN 2
+#define LEFT 3
 
 void printfn(const char *fmt, ...){
 	va_list args;
@@ -416,3 +423,21 @@ char* concat(char *s1, char *s2)
     memcpy(result+len1, s2, len2+1);//+1 to copy the null-terminator
     return result;
 }
+
+void move_vec(uintptr_t pos_loc, int dir){
+    vec2 *pos = (vec2 *)pos_loc;
+    switch(dir){
+        case UP:
+            pos->y -= 1;
+            break;
+        case DOWN:
+            pos->y += 1;
+            break;
+        case RIGHT:
+            pos->x += 1;
+            break;
+        case LEFT:
+            pos->x -= 1;
+    }
+}
+#endif
