@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 void test(){
 	printf("running parser test\n");
 
-	rstring buf = read_file("parsetest.ated");
+	rstring buf = read_file("tower.ated");
 
 	ated myentitydef = parse(buf);
 	//printfn("Name: %s",myentitydef.name);
@@ -203,6 +203,23 @@ char get_byte(rstring* buff){
 		c = get_byte(buff);
 	}
 	return c;
+}
+
+vec2 find(ated entity, char target){
+	for(int r = 0 ; r < entity.rows ; r++){
+		for(int c = 0 ; c < entity.columns ; c++){
+			if(entity.states[0].hitmap[r * entity.columns + c] == target){
+				vec2 found;
+				found.x = c;
+				found.y = r;
+				return found;
+			}
+		}
+	}
+	vec2 nope;
+	nope.x = -1;
+ 	nope.y = -1;	
+	return nope;
 }
 
 ated parse(rstring text){
