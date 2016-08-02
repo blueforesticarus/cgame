@@ -54,10 +54,11 @@ int main() {
 
     start_color();			/* Start color 			*/
 	
+	vec2 offset;
 	pos.x = 76;
-	pos.y = 25;
-        frame_offset.x=0;
-        frame_offset.y=10;
+	pos.y = 31;
+        frame_offset.x=0; offset.x=0;
+        frame_offset.y=6; offset.y=6;
 
 	rstring buf = read_file("demoland.ated");
 	ated land = parse(buf);	
@@ -66,7 +67,6 @@ int main() {
         buf = read_file("tower.ated");
         ated tower = parse(buf);
         vec2 last;
-	vec2 offset;
 
         ated landscape = land;
 		
@@ -189,12 +189,13 @@ int main() {
   				vec2 entrance = find(land,'W');
 				if(entrance.x != -1){					
 					landscape = land;         
-					last.x = pos.x;
-					last.y = pos.y;
                                 	offset.x = frame_offset.x;
                                 	offset.y = frame_offset.y;
-					pos.x= entrance.x + offset.x + newpos.x-pos.x;
-					pos.y= entrance.y + offset.y + newpos.y-pos.y;
+					pos.x= last.x;//entrance.x + offset.x + newpos.x-pos.x;
+					pos.y= last.y;//entrance.y + offset.y + newpos.y-pos.y;
+
+					last.x = pos.x;
+					last.y = pos.y;
 				}
 			}
                 }else if(hitcode == 'a'){
@@ -215,8 +216,10 @@ int main() {
 					landscape = land;         
 					last.x = pos.x;
 					last.y = pos.y;
-                                	offset.x = 0;
-                                	offset.y = 0;
+                                	
+                                	offset.x = frame_offset.x;
+                                	offset.y = frame_offset.y;
+                                
 					
 					pos.x= entrance.x + offset.x + newpos.x-pos.x;
 					pos.y= entrance.y + offset.y + newpos.y-pos.y;
@@ -243,8 +246,10 @@ int main() {
 					landscape = land;         
 					last.x = pos.x;
 					last.y = pos.y;
-                                	offset.x = 0;
-                                	offset.y = 0;
+                              
+                                	offset.x = frame_offset.x;
+                                	offset.y = frame_offset.y;
+                               
 					
 					pos.x= entrance.x + offset.x + newpos.x-pos.x;
 					pos.y= entrance.y + offset.y + newpos.y-pos.y;
@@ -272,9 +277,12 @@ int main() {
 					landscape = land;         
 					last.x = pos.x;
 					last.y = pos.y;
-                                	offset.x = 0;
-                                	offset.y = 0;
+                           
+                                	offset.x = frame_offset.x;
+                                	offset.y = frame_offset.y;
+                             
 
+					ladder = false; 
 					pos.x= entrance.x + offset.x + newpos.x-pos.x;
 					pos.y= entrance.y + offset.y + newpos.y-pos.y;
 
