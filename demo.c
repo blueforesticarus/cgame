@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     
 	adata_t mthread_status = DEFAULT_THREAD_STATUS;
 	adata_t fxthread_status = DEFAULT_THREAD_STATUS;
-	mthread_status.filepath = "death_and_maiden.ogg";
+	mthread_status.filepath = "cobalt.ogg";
     int ret = pthread_create(&mt, NULL, (void *) &handle_sound, &mthread_status);
     if (ret)
     {
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
     
             attron(COLOR_PAIR(101));
             for(i=0;i<titleLength;i+=2){
-                mvaddch(title[i]+offsety, title[i+1]+offsetx,(char)32);	
+                mvaddch(title[i]+offsety, title[i+1]+offsetx,(char)32);	https://www.youtube.com/watch?v=PLRrL9OsAF8
             }
             attroff(COLOR_PAIR(101));
     

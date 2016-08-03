@@ -11,6 +11,8 @@
 #include "parser.c"
 #include "embedpy.c"
 
+#include "sound.c"
+
 #define DELAY 50000
 
 #define WASD
@@ -34,7 +36,7 @@ int run=1, ice_rink = 0;
 void killer(int dummy){
  run=0;
 }
-
+pthread_t music_thread; // music thread.
 pthread_t mt; // mob thread (mobs run in python)
 vec2 pos, mobpos;
 int maxx, maxy;
@@ -46,6 +48,13 @@ int ladder = 0;
 vec2 frame_offset;
 
 int main() {
+
+
+    const adata_t DEFAULT_THREAD_STATUS = { .volume = 1.0, .volch = 0, .thread_complete = 0, .thread_idle = 1};
+	adata_t mthread_status = DEFAULT_THREAD_STATUS;
+	adata_t fxthread_status = DEFAULT_THREAD_STATUS;
+	mthread_status.filepath = "elevator.ogg";
+
 	signal(SIGINT, killer);
     
     initscr();
@@ -65,6 +74,8 @@ int main() {
         ated house = parse(buf);
         buf = read_file("tower.ated");
         ated tower = parse(buf);
+        buf = read_file("elevator.ated");
+        ated elevator = parse(buf);
         vec2 last;
 
         ated landscape = land;
@@ -315,6 +326,30 @@ int main() {
 
 				}
 			}
+		                }else if(hitcode == 'e'){
+                        if(strcmp(landscape.name,tower.name)==0){
+				vec2 entrance = find(elevator,'e');
+				if(entrance.x != -1){		
+					landscape = elevator;
+					last.x = pos.x;
+					last.y = pos.y;
+                                	offset.x = pos.x - entrance.x;
+                                	offset.y = pos.y - entrance.y;
+				
+					
+					pos.x= entrance.x + offset.x + newpos.x-pos.x;
+					pos.y= entrance.y + offset.y + newpos.y-pos.y;
+
+    int retm = pthread_create(&music_thread, NULL, (void *) &handle_sound, &mthread_status);
+    if (retm)
+    {
+        printf("Failed to start thread: %d\n", retm);
+        exit(retm);
+    }
+				}
+                        }else{			pos.x=newpos.x;
+			pos.y=newpos.y;}
+			
                 }else{
 			pos.x=newpos.x;
 			pos.y=newpos.y;
@@ -326,7 +361,8 @@ int main() {
     clock_gettime(CLOCK_REALTIME, &end_frame);
 	delta_t = get_timespec_diff_ms(start_frame, end_frame);
 	if (!ice_rink) rlbuff(delta_t);
-
+		
+	   if (mthread_status.thread_complete) mthread_status = DEFAULT_THREAD_STATUS;
 	}
 	endwin();	
 }

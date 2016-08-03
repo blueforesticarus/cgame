@@ -48,17 +48,17 @@ __/|\____________________/|\____________________________________________|\ |   |
                                                                     \ ||  /_____\  || /                     /|      |______| \                                            
                                                                      \||  || | ||  ||/                     / |_____/  ___   \ \                                           
                                                                       \|__|| | ||__|/                     | /         |_|    \ |              |                           
-                                                                                                          |/__________________\|             /|\                          
-                        |                                                                                  |   _   ___  ___   |              /|\   |                      
-                    |  /|\                                                XXXXXXXXXX                       |  | |  |_|  |_|   |               |   /|\                     
-                   /|\ /|\ |                  G                          XXXXXXXXXXXX                      |__| |_____________|        |          /|\                     
-                   /|\  | /|\                 |                        XXXXXXXXXXXXXXXX                                               /|\          |                      
-                    |     /|\                                         XXXXXXXXXXXXXXXXXX                                                                /|\               
-                           |                                         XXXXXXXXXXXXXXXXXXXX                                                                |                
-                                                                    XXXXXXXXXXXXXXXXXXXXXX                                                                                
-                                                                    XXXXXXXXXXXXXXXXXXXXXX                                                                                
-                                                                     XXXXXXXXXXXXXXXXXXXX                                                                                 
-                                                                      XXXXXXXXXXXXXXXXXX                                                                                  
+                                          _________                                                       |/__________________\|             /|\                          
+                        |                ////|||\\\\                                                       |   _   ___  ___   |              /|\   |                      
+                    |  /|\              ////|||||\\\\                                                      |  | |  |_|  |_|   |               |   /|\                     
+                   /|\ /|\ |            =============                                                      |__| |_____________|        |          /|\                     
+                   /|\  | /|\           | ||___G_|| |                                                                                 /|\          |                      
+                    |     /|\           |/||   | ||\|                                                                                 /|\                                 
+                           |            \\||_____||//                                                                                  |                                  
+                                         \/=======\/                                                                                                                      
+                                                                                                                                                                          
+                                                                                                                                                                          
+                                                                                                                                                                          
                                                                                                                                                                           
                                                                                                                                                                           
 66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
@@ -124,14 +124,14 @@ TBT   NBBB              BBBB   BT             TBT  B                    BBBBBBBB
                                                                       NNNNNN N NNNNNN                     |NNNNNNNNNNNNNNNNNNNN|              B                           
                                                                                                           |N__________________N|             BBB                          
                         B                                                                                  N   N   ___  ___   N              TBT   B                      
-                    B  BBB                                               IIIIIIIIII                        N  NWN  |_|  |_|   N               N   BBB                     
-                   BBB TBT B                  G                         IIIIIIIIIIII                       NNNN NNNNNNNNNNNNNNN        B          TBT                     
-                   TBT  N BBB                 P                       IIIIIIIIIIIIIIII                                                BBB          N                      
-                    N     TBT                                        IIIIIIIIIIIIIIIIII                                               TBT                                 
-                           N                                        IIIIIIIIIIIIIIIIIIII                                               N                                  
-                                                                   IIIIIIIIIIIIIIIIIIIIII                                                                                 
-                                                                   IIIIIIIIIIIIIIIIIIIIII                                                                                 
-                                                                    IIIIIIIIIIIIIIIIIIII                                                                                  
-                                                                     IIIIIIIIIIIIIIIIII                                                                                   
+                    B  BBB                                                                                 N  NWN  |_|  |_|   N               N   BBB                     
+                   BBB TBT B                  G                                                            NNNN NNNNNNNNNNNNNNN        B          TBT                     
+                   TBT  N BBB                 P                                                                                       BBB          N                      
+                    N     TBT                                                                                                         TBT                                 
+                           N                                                                                                           N                                  
+                                                                                                                                                                          
+                                                                                                                                                                          
+                                                                                                                                                                          
+                                                                                                                                                                          
                                                                                                                                                                           
 NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN

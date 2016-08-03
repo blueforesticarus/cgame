@@ -1,0 +1,49 @@
+=
+elevator
+=
+ zÿ
+=
+HÄ0
+=
+-11168
+=
+22
+=
+11
+=
+1
+=
+==
+......................
+......--------------..
+......ELEVATOR>>>>>>>.
+......--------------..
+....__________........
+...| ^ | | |  |.......
+...| v | | |  |.......
+...|___|_|_|__|.......
+../            \......
+./______________\.....
+......................
+BBBBBBBBBBBBBBBBBBBBBB
+BBBBBBWWWWWWWWWWWWWWBB
+BBBBBBWWWWWWWWWWWWWWWB
+BBBBBBWWWWWWWWWWWWWWBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+WWWWWWWWWWWWWWWWWWBBBB
+......................
+......--------------..
+......               .
+......--------------..
+....__________........
+...N ^ | | |  N.......
+...N v | | |  N.......
+..NDDDDDDDDDDDDN......
+..N            N......
+.N  __e_________N.....
+NNNNNNNNNNNNNNNNNNNNNN
